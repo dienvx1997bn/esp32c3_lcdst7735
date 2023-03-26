@@ -31,8 +31,9 @@ static const int SPI_Frequency = SPI_MASTER_FREQ_16M;
 #define MADCTL_BGR 0x08
 #define MADCTL_MH  0x04
 
+spi_bus_config_t buscfg;
 
-void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET)
+void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_MISO, int16_t GPIO_SCLK, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET)
 {
 	esp_err_t ret;
 
@@ -50,13 +51,12 @@ void spi_master_init(ST7735_t * dev, int16_t GPIO_MOSI, int16_t GPIO_SCLK, int16
 	vTaskDelay( pdMS_TO_TICKS( 100 ) );
 	gpio_set_level( GPIO_RESET, 1 );
 
-	spi_bus_config_t buscfg = {
-		.sclk_io_num = GPIO_SCLK,
-		.mosi_io_num = GPIO_MOSI,
-		.miso_io_num = -1,
-		.quadwp_io_num = -1,
-		.quadhd_io_num = -1
-	};
+
+	buscfg.sclk_io_num = GPIO_SCLK;
+	buscfg.mosi_io_num = GPIO_MOSI;
+	buscfg.miso_io_num = GPIO_MISO;
+	buscfg.quadwp_io_num = -1;
+	buscfg.quadhd_io_num = -1;
 
 	ret = spi_bus_initialize( HSPI_HOST, &buscfg, SPI_DMA_CH_AUTO );
 	ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
